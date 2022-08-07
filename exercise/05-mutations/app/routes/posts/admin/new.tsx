@@ -20,34 +20,34 @@ type ActionResult = {
 export async function action({ request, params }: ActionArgs) {
   const formData = await request.formData(); // <-- 📜 learn more https://mdn.io/formData
 
-  const errorObj: ActionResult = {};
-
   const title = formData.get("title");
-  invariant(typeof title === "string", "Title is not a string");
-  errorObj["title"] = !title ? "Title is required" : undefined;
-
   const slug = formData.get("slug");
-  invariant(typeof slug === "string", "Slug is not a string");
-  if (!slug) {
-    errorObj["slug"] = "Slug is required";
-  } else if (/\s/.test(slug)) {
-    errorObj["slug"] = "Slug must have no whitespace";
-  }
-
   const markdown = formData.get("markdown");
+
+  invariant(typeof title === "string", "Title is not a string");
+  invariant(typeof slug === "string", "Slug is not a string");
   invariant(typeof markdown === "string", "Markdown is not a string");
-  errorObj["markdown"] = !markdown ? "Markdown is required" : undefined;
+
+  const errorObj = {
+    title: !title ? "Title is required" : null,
+    slug: !slug
+      ? "Slug is required"
+      : /\s/.test(slug)
+      ? "Slug must have no whitespace"
+      : null,
+    markdown: !markdown ? "Markdown is required" : null,
+  };
 
   if (Object.values(errorObj).filter((item) => !!item).length) {
     return json(errorObj);
   }
 
-  const newPost = await createPost({
+  await createPost({
     title,
     slug,
     markdown,
   });
-  return redirect(`/posts/admin/${newPost.slug}`);
+  return redirect(`/posts/admin`);
 }
 
 export default function NewPost() {

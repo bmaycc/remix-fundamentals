@@ -1,6 +1,6 @@
 import type { ActionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import { Form, useActionData, useTransition } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { createPost } from "~/models/post.server";
@@ -34,8 +34,10 @@ export async function action({ request }: ActionArgs) {
 const inputClassName = `w-full rounded border border-gray-500 px-2 py-1 text-lg`;
 
 export default function NewPost() {
+  const transition = useTransition();
   const errors = useActionData<typeof action>();
 
+  const isSubmitting = Boolean(transition.submission);
   // 🐨 get the transition from useTransition
   // 🦉 make sure that useTransition comes from "@remix-run/react" and NOT "react"!!
   // 🐨 determine whether we're creating by whether there's a transition.submission object.
@@ -82,7 +84,7 @@ export default function NewPost() {
           // 🐨 add a disabled attribute to the button if we're creating
         >
           {/* 🐨 Have this say "Creating..." if we're in a creating state */}
-          Create Post
+          {isSubmitting ? "Creating..." : "Create Post"}
         </button>
       </p>
     </Form>
