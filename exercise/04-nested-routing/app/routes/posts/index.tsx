@@ -23,6 +23,11 @@ export default function Posts() {
           </li>
         ))}
       </ul>
+      <div className="mx-auto mt-16 max-w-7xl text-center">
+          <Link to="admin" className="text-xl text-blue-600 underline">
+            Admin
+          </Link>
+        </div>
     </main>
   );
 }
